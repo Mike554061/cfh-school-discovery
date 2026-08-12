@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Chefs For Hire — School Schedule · 2026 Fall Discovery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#241f19; --ink2:#332c23; --ink3:#181410;
+    --amber:#e0872b; --amber-d:#b96c1c; --amber-soft:#f4c98a; --tint:#fbf1e2;
+    --d1:#e0872b; --d2:#2f8f83; --d3:#8258b0;
+    --paper:#ffffff; --paper2:#faf5ec; --paper3:#f0e8db;
+    --line:#e7ddce; --txt:#241f19; --mut:#6d6255; --mut2:#9a8e7e;
+    --shadow:0 1px 2px rgba(40,32,20,.06),0 6px 20px rgba(40,32,20,.07);
+    --radius:12px;
+    --f:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:var(--f);font-size:14px;line-height:1.45;color:var(--txt);background:var(--paper2);-webkit-font-smoothing:antialiased}
+  a{color:var(--amber-d)}
+
+  /* ---------- GATE ---------- */
+  #gate{position:fixed;inset:0;z-index:3000;background:var(--ink3);display:flex;align-items:center;justify-content:center;padding:20px;
+    background-image:radial-gradient(circle at 50% -10%,rgba(224,135,43,.20),transparent 60%)}
+  #gate .box{width:100%;max-width:400px;background:var(--ink);border:1px solid #4a4034;border-radius:16px;padding:30px 26px;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.55)}
+  .wm{display:inline-flex;align-items:center;gap:9px;margin-bottom:12px}
+  .wm .mk{background:var(--amber);color:#231a10;font-weight:900;font-size:15px;letter-spacing:.02em;padding:6px 11px;border-radius:9px}
+  .wm .co{color:#fff;font-weight:700;font-size:15px;letter-spacing:.02em}
+  #gate h1{font-size:19px;color:#fff;margin:6px 0 3px}
+  #gate .sub{font-size:12.5px;color:#c3b6a4;margin-bottom:20px;line-height:1.55}
+  #gate input{width:100%;background:var(--ink3);border:1px solid #4a4034;color:#fff;border-radius:9px;padding:12px 13px;font-size:15px;font-family:var(--f);margin:6px 0}
+  #gate input:focus{outline:none;border-color:var(--amber)}
+  #gate button{width:100%;background:var(--amber);color:#231a10;border:none;border-radius:9px;padding:12px;font-size:14.5px;font-weight:700;font-family:var(--f);cursor:pointer;margin-top:10px}
+  #gate button:hover{background:var(--amber-soft)}
+  #gate .row2{display:flex;gap:8px}#gate .row2 input{width:50%}
+  #gMsg{font-size:12.5px;margin-top:12px;min-height:16px}
+  #gBack{color:#c3b6a4;font-size:12px;display:inline-block;margin-top:12px;cursor:pointer;text-decoration:underline}
+  .gfine{font-size:11px;color:#7d7161;margin-top:16px;line-height:1.5}
+
+  /* ---------- HEADER ---------- */
+  header{background:var(--ink);color:#fff;padding:13px 22px;display:flex;align-items:center;gap:14px;border-bottom:3px solid var(--amber)}
+  header .mk{background:var(--amber);color:#231a10;font-weight:900;font-size:15px;padding:6px 11px;border-radius:9px;letter-spacing:.02em}
+  header .htxt .t{font-size:17px;color:#fff;font-weight:800;letter-spacing:-.01em}
+  header .htxt .s{font-size:12px;color:var(--amber-soft);margin-top:2px}
+  header .who{margin-left:auto;text-align:right;font-size:11.5px;color:#c3b6a4}
+  header .who b{color:#fff;display:block}
+
+  .wrap{max-width:1640px;margin:0 auto;padding:18px}
+
+  /* ---------- STATS ---------- */
+  .stats{display:grid;grid-template-columns:1.5fr repeat(6,1fr);gap:11px;margin-bottom:16px}
+  @media(max-width:1200px){.stats{grid-template-columns:repeat(4,1fr)}}
+  @media(max-width:680px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:13px 15px;box-shadow:var(--shadow)}
+  .stat .n{font-size:24px;font-weight:800;line-height:1;color:var(--ink);letter-spacing:-.02em}
+  .stat .l{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin-top:7px;font-weight:700}
+  .stat .sub{color:var(--mut2);font-size:10.5px;margin-top:4px}
+  .stat.hero{background:var(--ink);border-color:var(--ink)}
+  .stat.hero .n{color:var(--amber-soft);font-size:31px}
+  .stat.hero .l{color:#d8b98f}
+  .stat.hero .sub{color:#b3a48f}
+
+  /* ---------- toolbar ---------- */
+  .toolbar{display:flex;gap:12px;align-items:stretch;flex-wrap:wrap;margin-bottom:14px}
+  details.asum{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);flex:1;min-width:280px}
+  details.asum summary{cursor:pointer;padding:11px 15px;font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);font-weight:700;list-style:none}
+  details.asum summary::-webkit-details-marker{display:none}
+  details.asum summary::before{content:"▸ ";color:var(--amber-d)}
+  details.asum[open] summary::before{content:"▾ "}
+  .asum .body{padding:2px 15px 14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+  .asum label{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;display:block}
+  .asum .fld{display:flex;align-items:center;gap:8px;margin-top:4px}
+  .asum input{width:74px;font-family:var(--f);border:1px solid var(--line);border-radius:7px;padding:6px 8px;font-size:14px;font-weight:700}
+  .asum .u{font-size:11px;color:var(--mut)}
+  .asum .note{grid-column:1/-1;font-size:11.5px;color:var(--mut);border-top:1px dashed var(--line);padding-top:10px}
+
+  /* ---------- PANEL ---------- */
+  .panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+  .panel .head{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  .panel .head h2{margin:0;font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink);font-weight:800}
+  .btns{display:flex;gap:8px;flex-wrap:wrap}
+  button.b{font-family:var(--f);cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--txt);padding:7px 12px;border-radius:8px;font-weight:700;font-size:12px;transition:.12s}
+  button.b:hover{border-color:var(--amber-d);color:var(--amber-d)}
+  button.b.ghost{background:transparent;border-color:transparent;color:var(--mut)}
+
+  /* ---------- CHIPS ---------- */
+  .chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .chips .lbl{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em;margin-right:2px}
+  .chip{font-family:var(--f);font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;border:1px solid var(--line);background:#fff;color:var(--mut);cursor:pointer}
+  .chip.on{background:var(--ink);color:var(--amber-soft);border-color:var(--ink)}
+  .chip .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+
+  /* ---------- MATRIX ---------- */
+  .mxwrap{overflow-x:auto}
+  table.mx{border-collapse:separate;border-spacing:0;width:100%;min-width:900px}
+  table.mx th,table.mx td{border-bottom:1px solid var(--line);vertical-align:top}
+  table.mx .fl{position:sticky;left:0;z-index:3;background:var(--paper);width:190px;min-width:190px;padding:11px 14px;border-right:1px solid var(--line)}
+  table.mx .fl .lb{font-weight:700;font-size:12.5px;color:var(--ink)}
+  table.mx .fl .hn{font-size:10.5px;color:var(--mut2);margin-top:2px;line-height:1.35}
+  thead .sch{background:var(--paper2);position:sticky;top:0;z-index:4;padding:10px 12px;border-right:1px solid var(--line);min-width:200px;text-align:left}
+  thead .sch.corner{z-index:6;left:0}
+  .sch .toprow{display:flex;align-items:center;gap:7px}
+  .sch .dbadge{font-size:9.5px;font-weight:800;letter-spacing:.04em;padding:2px 6px;border-radius:5px;color:#fff}
+  .sch .nm{font-weight:800;font-size:12.5px;color:var(--ink);margin-top:6px;line-height:1.25}
+  .sch .ad{font-size:10.5px;color:var(--mut);margin-top:3px;line-height:1.35}
+  .sch.off{opacity:.45}
+  /* throttle switch */
+  .sw{margin-left:auto;position:relative;width:38px;height:20px;border-radius:20px;background:#cfc4b3;cursor:pointer;transition:.15s;flex:none}
+  .sw.on{background:var(--amber)}
+  .sw i{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.15s;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+  .sw.on i{left:20px}
+  tr.sec td{background:var(--ink);color:#fff;font-weight:700;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;padding:6px 14px;position:sticky;left:0}
+  td.v{padding:7px 10px;border-right:1px solid var(--line)}
+  td.v input[type=text],td.v textarea{width:100%;border:1px solid transparent;background:transparent;padding:6px 7px;border-radius:6px;font-family:var(--f);font-size:12.5px;color:var(--ink);resize:vertical}
+  td.v input:hover,td.v textarea:hover{background:var(--paper2)}
+  td.v input:focus,td.v textarea:focus{outline:none;border-color:var(--amber);background:#fff}
+  td.v textarea{min-height:34px;line-height:1.35}
+  td.off{opacity:.4}
+  .days5{display:flex;gap:4px;flex-wrap:wrap}
+  .dtog{font-size:11px;font-weight:700;padding:5px 0;width:32px;text-align:center;border-radius:7px;border:1px solid var(--line);background:#fff;color:var(--mut);cursor:pointer;user-select:none}
+  .dtog.on{background:var(--amber);border-color:var(--amber);color:#fff}
+  .timewin{display:flex;gap:6px;align-items:center}
+  .timewin .arw{color:var(--mut2);font-size:11px}
+
+  /* ---------- ROUTE ---------- */
+  .rgrid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;align-items:start}
+  @media(max-width:1050px){.rgrid{grid-template-columns:1fr}}
+  #map{height:480px;width:100%}
+  .days{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;padding:14px 16px}
+  .day{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .day h3{margin:0;padding:9px 13px;color:#fff;font-size:12px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+  .day h3 .meta{font-size:10.5px;color:rgba(255,255,255,.85);font-weight:600}
+  .day .seq{padding:9px 13px;font-size:12px}
+  .day .seq .leg{display:flex;align-items:baseline;gap:6px;margin:2px 0}
+  .day .seq .stop{font-weight:600;color:var(--ink)}
+  .day .seq .stop .dd{font-weight:500;color:var(--mut2);font-size:10.5px;margin-left:4px}
+  .day .seq .drive{font-size:10.5px;color:var(--mut);padding-left:14px;position:relative}
+  .day .seq .drive::before{content:"↓";position:absolute;left:2px;color:var(--amber-d)}
+  .day .foot{padding:8px 13px;border-top:1px dashed var(--line);font-size:10.5px;color:var(--mut);display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px}
+  .note{font-size:11.5px;color:var(--mut);margin:8px 2px 0;line-height:1.5}
+  .maplibregl-popup-content{font-family:var(--f);font-size:12px;padding:8px 12px;border-radius:8px}
+  .pin{font-size:9.5px;font-weight:800;color:#fff;padding:0 7px;height:22px;display:flex;align-items:center;border-radius:8px;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+
+  footer{max-width:1640px;margin:0 auto;padding:8px 18px 30px;color:var(--mut);font-size:12px}
+  footer .tag{font-weight:700;color:var(--amber-d)}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN GATE ============ -->
+<div id="gate">
+  <div class="box">
+    <div class="wm"><span class="mk">CFH</span><span class="co">Chefs For Hire</span></div>
+    <h1>School Schedule — Fall 2026 Discovery</h1>
+    <div class="sub">A working schedule &amp; route fact-find for the Chefs For Hire school accounts. Enter your details to access.</div>
+    <div id="gstep1">
+      <div class="row2"><input id="gName" placeholder="Full name" autocomplete="name"><input id="gCo" placeholder="Company" autocomplete="organization"></div>
+      <input id="gEmail" placeholder="you@company.com" type="email" autocomplete="email">
+      <input id="gPhone" placeholder="Mobile (optional)" type="tel" autocomplete="tel">
+      <button id="gSend">Send access code</button>
+    </div>
+    <div id="gstep2" style="display:none">
+      <div class="sub">Enter the 6-digit code sent to <b id="gEmailShow"></b>.</div>
+      <input id="gCode" placeholder="6-digit code" inputmode="numeric" maxlength="6">
+      <button id="gVerify">Verify &amp; enter</button>
+      <span id="gBack">← use different details</span>
+    </div>
+    <div id="gMsg"></div>
+    <div class="gfine">Ice cream sundaes &amp; root beer floats 🍦 · Property of SupplyNow / Chefs For Hire</div>
+  </div>
+</div>
+
+<header>
+  <span class="mk">CFH</span>
+  <div class="htxt">
+    <div class="t">School Schedule — Fall 2026 Discovery</div>
+    <div class="s">Chefs For Hire · 3 driver routes · Akron / Cleveland / Canton, OH</div>
+  </div>
+  <div class="who" id="who"></div>
+</header>
+
+<div class="wrap">
+
+  <div class="stats" id="stats"></div>
+
+  <div class="toolbar">
+    <details class="asum" id="asum">
+      <summary>Routing assumptions (edit to model)</summary>
+      <div class="body">
+        <div><label>Stop service time</label><div class="fld"><input id="a_svc" type="number" step="5" value="15"><span class="u">min / stop</span></div></div>
+        <div><label>Fallback speed</label><div class="fld"><input id="a_mph" type="number" step="1" value="30"><span class="u">mph (if drive API down)</span></div></div>
+        <div class="note">Each route starts &amp; ends at <b>CFH Production, 3619 Walton Ave, Cleveland</b>. Drive times come from live road-network routing (OSRM); stop time is a flat allowance per school. Weekly totals roll up each school's captured delivery days. <b>No pricing shown.</b></div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ============ DISCOVERY MATRIX ============ -->
+  <div class="panel">
+    <div class="head">
+      <h2>Schedule fact-find — confirm &amp; update per school</h2>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <div class="chips" id="drvChips"></div>
+        <div class="btns">
+          <button class="b" onclick="exportCSV()">Export CSV</button>
+          <button class="b" onclick="exportJSON()">Export JSON</button>
+          <button class="b ghost" onclick="resetAll()">Reset</button>
+        </div>
+      </div>
+    </div>
+    <div class="mxwrap">
+      <table class="mx" id="mx"></table>
+    </div>
+    <div class="note" style="padding:0 16px 12px">Toggle a school <b>on/off</b> in its header to include/exclude it from the routes &amp; totals. Every field saves to the <b>shared record</b> — visible to anyone who logs in, on any device — and every change is <b>permanently logged</b>. Fill the <b>Holiday schedule</b> where it still says “(Update)”.</div>
+  </div>
+
+  <!-- ============ ROUTE VISUAL ============ -->
+  <div class="panel">
+    <div class="head">
+      <h2>Route footprint &amp; drive times</h2>
+      <div style="color:var(--mut);font-size:11.5px">CFH Production = origin · one loop per driver</div>
+    </div>
+    <div class="rgrid">
+      <div id="map"></div>
+      <div class="days" id="days"></div>
+    </div>
+    <p class="note" id="milesnote" style="padding:0 16px 14px"></p>
+  </div>
+
+</div>
+
+<footer>
+  <span class="tag">Thank you for supporting locality.</span> &nbsp;Chefs For Hire — Fall 2026. Drive times are live road-network estimates; each driver runs one loop from CFH Production and back. Everything you capture saves to the shared record automatically.
+</footer>
+
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script>
+/* ================= ENDPOINT / GATE / SHARED STORE ================= */
+const ENDPOINT='https://script.google.com/macros/s/AKfycbz4ial75YjPQODBlfOFZJJWeRDQn7MI9KT6UrfKUGkR1VAHhy7Ns07y1QT_tqfl2D1L/exec';
+const SITE='cfh', NS='cfh';
+const LOCAL=location.hostname==='localhost'||location.hostname==='127.0.0.1'||location.protocol==='file:';
+const Q=new URLSearchParams(location.search);
+const SERVER=!LOCAL||Q.has('live');
+const DEV=LOCAL&&!Q.has('gate');
+let GUSER={email:'',name:'',company:'',phone:''};
+
+function jsonp(params){return new Promise(res=>{const fn='_j'+Math.random().toString(36).slice(2);const s=document.createElement('script');window[fn]=d=>{res(d||{});delete window[fn];s.remove();};s.onerror=()=>{res({ok:false,error:'network'});s.remove();};s.src=ENDPOINT+'?'+new URLSearchParams(Object.assign({},params,{callback:fn}));document.body.appendChild(s);});}
+let _logT;
+function logCapture(type,data){ if(!GUSER.email||!SERVER)return; clearTimeout(_logT); _logT=setTimeout(()=>{jsonp({mode:'log',site:SITE,email:GUSER.email,type:SITE+':'+type,data:JSON.stringify(data).slice(0,40000)});},1200); }
+function logNow(type,data){ if(!GUSER.email||!SERVER)return; jsonp({mode:'log',site:SITE,email:GUSER.email,type:SITE+':'+type,data:JSON.stringify(data).slice(0,40000)}); }
+function pushField(short,field,oldv,newv){
+  if(!SERVER||!GUSER.email)return;
+  jsonp({mode:'disc_set',ns:NS,email:GUSER.email,key:short+'|'+field,val:newv==null?'':String(newv),old:oldv==null?'':String(oldv),school:short,field:field});
+}
+async function hydrate(){ if(!SERVER)return; try{const r=await jsonp({mode:'disc_get',ns:NS});if(r&&r.ok&&r.state)applyState(r.state);}catch(e){} }
+
+/* ================= CONFIG ================= */
+const DAYS=["Mon","Tue","Wed","Thu","Fri"];
+let A={svc:15,mph:30};
+const ORIGIN={id:'CFHPROD',name:'CFH Production',address:'3619 Walton Ave, Cleveland, OH 44113',lat:41.470927,lng:-81.70882};
+const DRIVERS={1:{name:'Driver 1',color:'#e0872b'},2:{name:'Driver 2',color:'#2f8f83'},3:{name:'Driver 3',color:'#8258b0'}};
+function daysFrom(s){const o={Mon:true,Tue:true,Wed:true,Thu:true,Fri:true};if(/thurs/i.test(s))o.Fri=false;return o;}
+
+const SEED=[
+ {short:'MIDDLE',driver:1,name:'Middlebury Elementary',address:'88 Kent St, Akron, OH 44305',lat:41.072733,lng:-81.487878,wStart:'10:00',wEnd:'10:45',days:daysFrom('Mon-Thurs'),notes:'Drop off 11AM · Eat 11:15–1:10. Biggest stop — drop at back door, ring bell on left.',holiday:'(Update)'},
+ {short:'STEEL',driver:1,name:'Steel Elementary',address:'1570 Creighton Ave, Akron, OH 44310',lat:41.106636,lng:-81.476795,wStart:'10:05',wEnd:'11:45',days:daysFrom('Mon-Thurs'),notes:'Drop off 10:45 · Eat 11–11:45',holiday:'(Update)'},
+ {short:'ACT',driver:1,name:'ACT Elementary',address:'1115 S Main St, Akron, OH 44301',lat:41.056402,lng:-81.528807,wStart:'10:30',wEnd:'11:45',days:daysFrom('Mon-Thurs'),notes:'Drop off 11:45 · Eat 12–1pm · 2 drops, one stop',holiday:'(Update)'},
+ {short:'EELAAK',driver:1,name:'EELA Akron',address:'1115 S Main St, Akron, OH 44301',lat:41.056402,lng:-81.528807,wStart:'10:30',wEnd:'11:30',days:daysFrom('Mon-Fri'),notes:'Drop off 11:45 · Eat 12–1pm · 2 drops at 1 stop (shares building with ACT)',holiday:'(Update)'},
+ {short:'MAINPREP',driver:1,name:'Main Prep',address:'1035 Clay St, Akron, OH 44301',lat:41.053274,lng:-81.510948,wStart:'10:00',wEnd:'10:45',days:daysFrom('Mon-Fri'),notes:'Front door — call Mary +1 330-592-2526, they bring out a cart. Drop off 11:30 · Eat 12:05',holiday:'(Update)'},
+ {short:'LAKEERIE',driver:2,name:'Lake Erie Elementary',address:'11724 Detroit Ave, Lakewood, OH 44107',lat:41.483713,lng:-81.76914,wStart:'10:25',wEnd:'10:40',days:daysFrom('Mon-Thurs'),notes:'(1) Drop off 10:30 · Eat 11AM · park in back lot, use that entrance',holiday:'(Update)'},
+ {short:'CASTMAIN',driver:2,name:'Castle Main Elementary',address:'3950 Prospect Ave, Cleveland, OH 44115',lat:41.502098,lng:-81.658301,wStart:'10:30',wEnd:'10:45',days:daysFrom('Mon-Fri'),notes:'(2) Drop off 10:45 · Eat 11–11:30 · bring to front door',holiday:'(Update)'},
+ {short:'IAW',driver:2,name:'IAW Elementary',address:'13111 Crossburn Ave, Cleveland, OH 44135',lat:41.424966,lng:-81.781316,wStart:'11:10',wEnd:'11:30',days:daysFrom('Mon-Fri'),notes:'Drop off 11:30 · Eat 12–1:20pm',holiday:'(Update)'},
+ {short:'CASTPARMA',driver:2,name:'Castle Parma Elementary',address:'12000 Snow Rd, Parma, OH 44130',lat:41.405094,lng:-81.77026,wStart:'11:30',wEnd:'11:45',days:daysFrom('Mon-Thurs'),notes:'Suite 4 & 5 · (3) Drop off 11:40 · Eat 11:50–12:10 · bring to front door',holiday:'(Update)'},
+ {short:'CASTEAST',driver:2,name:'Castle East Elementary',address:'5130 Warrensville Center Rd, Maple Heights, OH 44137',lat:41.420923,lng:-81.537431,wStart:'12:20',wEnd:'12:35',days:daysFrom('Mon-Thurs'),notes:'Driver re-stages at CFH Production before this stop. Drop off 12:35pm · Eat 12:50–1:50 · bring to front door',holiday:'(Update)'},
+ {short:'EELACAN',driver:3,name:'EELA Canton',address:'3500 Cleveland Ave NW, North Canton, OH 44720',lat:40.837255,lng:-81.389663,wStart:'10:20',wEnd:'11:00',days:daysFrom('Mon-Thurs'),notes:'Arrive by 10:20, leave by 10:30',holiday:'(Update)'},
+ {short:'BEACON',driver:3,name:'Beacon',address:'243 N Milton St, Smithville, OH 44677',lat:40.864777,lng:-81.861082,wStart:'10:40',wEnd:'11:15',days:daysFrom('Mon-Fri'),notes:'Two locations in one',holiday:'(Update)'},
+ {short:'STARK',driver:3,name:'Stark Elementary',address:'1379 Garfield Ave SW, Canton, OH 44706',lat:40.78558,lng:-81.393308,wStart:'10:40',wEnd:'11:00',days:daysFrom('Mon-Fri'),notes:'Two locations in one',holiday:'(Update)'},
+];
+
+/* ================= STATE ================= */
+let SCHOOLS=load()||SEED.map(s=>Object.assign({_inc:true},JSON.parse(JSON.stringify(s))));
+let DRVON={1:true,2:true,3:true};
+let map,markers=[],routeCache={};
+function save(){localStorage.setItem("cfhdisco_v1",JSON.stringify(SCHOOLS));}
+function load(){try{const d=localStorage.getItem("cfhdisco_v1");return d?JSON.parse(d):null}catch(e){return null}}
+function inc(s){return s._inc!==false;}
+function idxOf(s){return SCHOOLS.indexOf(s);}
+
+/* ================= GEO / MATRIX ================= */
+function hav(a,b){if(a.lat==null||b.lat==null)return 0;const R=3958.8,dLat=(b.lat-a.lat)*Math.PI/180,dLng=(b.lng-a.lng)*Math.PI/180;const s=Math.sin(dLat/2)**2+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLng/2)**2;return 2*R*Math.asin(Math.sqrt(s));}
+let OSRM={}; // "lat,lng>lat,lng" -> {min,mi}
+function key2(a,b){return a.lat+','+a.lng+'>'+b.lat+','+b.lng;}
+function leg(a,b){const k=key2(a,b);if(OSRM[k])return OSRM[k];const mi=hav(a,b);return {min:mi/(A.mph||30)*60, mi:mi, est:true};}
+
+function driverRoute(d){ // full loop, all included schools of driver d in seed order
+  const list=SCHOOLS.filter(s=>inc(s)&&s.driver===d);
+  if(!list.length)return null;
+  const seq=[ORIGIN,...list,ORIGIN];const legs=[];let drive=0,dist=0;
+  for(let i=0;i<seq.length-1;i++){const l=leg(seq[i],seq[i+1]);legs.push({from:seq[i],to:seq[i+1],min:l.min,mi:l.mi});drive+=l.min;dist+=l.mi;}
+  return {driver:d,order:list,legs,drive,dist,stops:list.length,stopMin:list.length*A.svc};
+}
+function dayDriverDrive(d,day){ // route for driver d on a given weekday (only schools running that day)
+  const list=SCHOOLS.filter(s=>inc(s)&&s.driver===d&&s.days[day]);
+  if(!list.length)return {drive:0,dist:0,stops:0};
+  const seq=[ORIGIN,...list,ORIGIN];let drive=0,dist=0;
+  for(let i=0;i<seq.length-1;i++){const l=leg(seq[i],seq[i+1]);drive+=l.min;dist+=l.mi;}
+  return {drive,dist,stops:list.length};
+}
+function totals(){
+  let stops=0,drive=0,dist=0;
+  [1,2,3].forEach(d=>DAYS.forEach(day=>{const r=dayDriverDrive(d,day);stops+=r.stops;drive+=r.drive;dist+=r.dist;}));
+  const stopMin=stops*A.svc;
+  const included=SCHOOLS.filter(inc);
+  const drivers=new Set(included.map(s=>s.driver)).size;
+  const holidaySet=included.filter(s=>{const h=(s.holiday||'').trim();return h&&!/^\(?update\)?$/i.test(h);}).length;
+  return {schools:included.length,drivers,stops,drive,stopMin,dist,total:drive+stopMin,holidaySet,holidayTot:included.length};
+}
+
+/* ================= RENDER ================= */
+function num(n){return (n||0).toLocaleString(undefined,{maximumFractionDigits:0})}
+function esc(s){return (s==null?'':String(s)).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
+function hrs(min){return (min/60).toLocaleString(undefined,{maximumFractionDigits:1})}
+function mn(min){min=Math.round(min);if(min<60)return min+'m';const h=Math.floor(min/60),m=min%60;return h+'h'+(m?' '+m+'m':'');}
+
+function renderStats(){
+  const t=totals();
+  document.getElementById("stats").innerHTML=[
+    {hero:1,n:mn(t.total),l:"Total route time / wk",sub:`${hrs(t.drive)}h drive · ${hrs(t.stopMin)}h stops`},
+    {n:num(t.schools),l:"Schools on"},
+    {n:num(t.drivers),l:"Driver routes"},
+    {n:num(t.stops),l:"Delivery stops / wk"},
+    {n:mn(t.drive),l:"Drive time / wk",sub:`~${num(t.dist)} mi`},
+    {n:mn(t.stopMin),l:"Stop time / wk",sub:`${A.svc} min × ${t.stops}`},
+    {n:t.holidaySet+"/"+t.holidayTot,l:"Holiday plans set"},
+  ].map(s=>`<div class="stat ${s.hero?'hero':''}"><div class="n">${s.n}</div><div class="l">${s.l}</div>${s.sub?`<div class="sub">${s.sub}</div>`:''}</div>`).join("");
+  document.getElementById("milesnote").innerHTML=`Across 3 driver loops from CFH Production: ~<b>${num(t.dist)} mi</b> and ~<b>${mn(t.drive)}</b> driving per week, plus <b>${mn(t.stopMin)}</b> stop time (${A.svc} min × ${t.stops} stops) = <b>${mn(t.total)}</b> total route time. ${OSRM_LIVE?'<span style="color:var(--amber-d)">Live road-network drive times.</span>':'<span style="color:#b96c1c">Straight-line estimates (live routing loading…).</span>'}`;
+}
+
+const FIELDS=[
+  {sec:'Location'},
+  {k:'address',lb:'Address',hn:'drop-off address',t:'text'},
+  {sec:'Delivery schedule'},
+  {k:'days',lb:'Delivery days',hn:'toggle weekdays served',t:'days'},
+  {k:'window',lb:'Delivery window',hn:'start → stop time',t:'window'},
+  {sec:'Delivery details'},
+  {k:'notes',lb:'Delivery notes',hn:'access, drop-off & eat times',t:'area'},
+  {sec:'Holiday'},
+  {k:'holiday',lb:'Holiday schedule',hn:'no-delivery dates / plan — replace “(Update)”',t:'area'},
+];
+
+function cell(s,f){
+  const i=idxOf(s);
+  if(f.t==='days')return `<div class="days5">${DAYS.map(dy=>`<div class="dtog ${s.days[dy]?'on':''}" onclick="togDay(${i},'${dy}')">${dy[0]}</div>`).join('')}</div>`;
+  if(f.t==='window')return `<div class="timewin"><input type="text" value="${esc(s.wStart)}" placeholder="10:00" onchange="updD(${i},'wStart',this.value)"><span class="arw">→</span><input type="text" value="${esc(s.wEnd)}" placeholder="10:45" onchange="updD(${i},'wEnd',this.value)"></div>`;
+  if(f.t==='area')return `<textarea onchange="updD(${i},'${f.k}',this.value)">${esc(s[f.k])}</textarea>`;
+  return `<input type="text" value="${esc(s[f.k])}" onchange="updD(${i},'${f.k}',this.value)">`;
+}
+function renderMatrix(){
+  const shown=SCHOOLS.filter(s=>DRVON[s.driver]);
+  let h=`<thead><tr><th class="sch corner">Field</th>`;
+  shown.forEach(s=>{
+    const dc=DRIVERS[s.driver].color;
+    h+=`<th class="sch ${inc(s)?'':'off'}"><div class="toprow"><span class="dbadge" style="background:${dc}">${DRIVERS[s.driver].name}</span><div class="sw ${inc(s)?'on':''}" title="Include this school" onclick="togInc(${idxOf(s)})"><i></i></div></div><div class="nm">${esc(s.name)}</div><div class="ad">${esc(s.address)}</div></th>`;
+  });
+  h+=`</tr></thead><tbody>`;
+  FIELDS.forEach(f=>{
+    if(f.sec){h+=`<tr class="sec"><td colspan="${shown.length+1}">${esc(f.sec)}</td></tr>`;return;}
+    h+=`<tr><td class="fl"><div class="lb">${esc(f.lb)}</div><div class="hn">${esc(f.hn||'')}</div></td>`;
+    shown.forEach(s=>{h+=`<td class="v ${inc(s)?'':'off'}">${cell(s,f)}</td>`;});
+    h+=`</tr>`;
+  });
+  h+=`</tbody>`;
+  document.getElementById("mx").innerHTML=h;
+}
+function renderChips(){
+  const el=document.getElementById("drvChips");
+  el.innerHTML='<span class="lbl">Routes:</span>'+[1,2,3].map(d=>`<span class="chip ${DRVON[d]?'on':''}" onclick="togDrv(${d})"><span class="dot" style="background:${DRIVERS[d].color}"></span>${DRIVERS[d].name}</span>`).join('');
+}
+function renderDays(){
+  const el=document.getElementById("days");el.innerHTML="";
+  let any=false;
+  [1,2,3].forEach(d=>{
+    if(!DRVON[d])return;
+    const r=driverRoute(d);
+    const c=document.createElement("div");c.className="day";
+    const dc=DRIVERS[d].color;
+    if(!r){c.innerHTML=`<h3 style="background:${dc}">${DRIVERS[d].name} <span class="meta">no schools on</span></h3><div class="seq" style="color:var(--mut)">All stops toggled off.</div>`;el.appendChild(c);any=true;return;}
+    any=true;
+    let seq=`<div class="leg"><span class="pin" style="background:${dc};height:18px;font-size:9px">CFH</span><span class="stop">Production</span></div>`;
+    r.legs.forEach((lg,idx)=>{
+      const back=lg.to.id==='CFHPROD';
+      seq+=`<div class="drive">${mn(lg.min)} · ${num(lg.mi)} mi</div>`;
+      const dd=back?'':`<span class="dd">${DAYS.filter(x=>lg.to.days[x]).map(x=>x[0]).join('')}</span>`;
+      seq+=`<div class="leg"><span class="pin" style="background:${dc};height:18px;font-size:9px">${back?'CFH':(idx+1)}</span><span class="stop">${back?'Production (return)':esc(lg.to.name)}${dd}</span></div>`;
+    });
+    c.innerHTML=`<h3 style="background:${dc}">${DRIVERS[d].name} <span class="meta">${r.stops} stops · ${mn(r.drive+r.stopMin)}</span></h3>
+      <div class="seq">${seq}</div>
+      <div class="foot"><span>${mn(r.drive)} drive · ${num(r.dist)} mi</span><span>${mn(r.stopMin)} stops</span></div>`;
+    el.appendChild(c);
+  });
+  if(!any)el.innerHTML=`<div class="day"><h3 style="background:var(--mut)">No routes shown</h3><div class="seq">Turn a driver route on above.</div></div>`;
+}
+function renderAll(){renderChips();renderMatrix();renderStats();renderDays();drawMap();}
+
+/* ================= EDIT ================= */
+function updD(i,k,v){const s=SCHOOLS[i],old=s[k];s[k]=v;save();pushField(s.short,k,old,v);renderStats();if(k==='address'){drawMap();}}
+function togDay(i,dy){const s=SCHOOLS[i],old=daysCSV(s);s.days[dy]=!s.days[dy];save();pushField(s.short,'days',old,daysCSV(s));renderMatrix();renderStats();renderDays();}
+function daysCSV(s){return DAYS.filter(d=>s.days[d]).join(',');}
+function togInc(i){const s=SCHOOLS[i];s._inc=!inc(s);save();pushField(s.short,'inc',(!s._inc)?'on':'off',s._inc?'on':'off');renderMatrix();renderStats();renderDays();drawMap();}
+function togDrv(d){DRVON[d]=!DRVON[d];renderChips();renderMatrix();renderDays();drawMap();}
+function applyState(state){
+  SCHOOLS.forEach(s=>{
+    const g=k=>state[s.short+'|'+k];
+    ['address','wStart','wEnd','notes','holiday'].forEach(k=>{const v=g(k);if(v!==undefined)s[k]=v;});
+    const dv=g('days');if(dv!==undefined){const on=String(dv).split(',').map(x=>x.trim());DAYS.forEach(d=>s.days[d]=on.indexOf(d)>=0);}
+    const iv=g('inc');if(iv!==undefined)s._inc=(iv!=='off');
+  });
+  localStorage.setItem("cfhdisco_v1",JSON.stringify(SCHOOLS));
+}
+function resetAll(){if(confirm("Clear local changes and reload the original schedule?")){SCHOOLS=SEED.map(s=>Object.assign({_inc:true},JSON.parse(JSON.stringify(s))));save();renderAll();logNow('reset',{});}}
+['svc','mph'].forEach(k=>{const m={svc:'a_svc',mph:'a_mph'};document.getElementById(m[k]).addEventListener('input',e=>{A[k]=+e.target.value||A[k];renderStats();renderDays();drawMap();});});
+
+/* ================= MAP ================= */
+let OSRM_LIVE=false;
+function initMap(){
+  map=new maplibregl.Map({container:"map",style:{version:8,sources:{osm:{type:"raster",tiles:["https://a.tile.openstreetmap.org/{z}/{x}/{y}.png","https://b.tile.openstreetmap.org/{z}/{x}/{y}.png"],tileSize:256,attribution:"© OpenStreetMap"}},layers:[{id:"osm",type:"raster",source:"osm"}]},center:[-81.55,41.15],zoom:8.4});
+  map.addControl(new maplibregl.NavigationControl(),"top-right");
+  map.on("load",()=>{drawMap();refreshOSRM();});
+}
+async function osrmGeom(list){
+  const k=list.map(s=>s.id||s.short).join('>');if(routeCache[k])return routeCache[k];
+  try{const coords=list.map(s=>`${s.lng},${s.lat}`).join(';');
+    const r=await fetch(`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`);
+    const j=await r.json();if(j.routes&&j.routes[0]){routeCache[k]=j.routes[0].geometry.coordinates;return routeCache[k];}}catch(e){}
+  return list.map(s=>[s.lng,s.lat]);
+}
+async function drawMap(){
+  if(!map||!map.isStyleLoaded()){setTimeout(drawMap,150);return;}
+  markers.forEach(m=>m.remove());markers=[];
+  ['r1','r2','r3'].forEach(id=>{if(map.getLayer(id))map.removeLayer(id);if(map.getSource(id))map.removeSource(id);});
+  const de=document.createElement("div");de.className="pin";de.style.background="#241f19";de.textContent="◆ CFH PRODUCTION";de.style.fontSize="9px";
+  markers.push(new maplibregl.Marker({element:de}).setLngLat([ORIGIN.lng,ORIGIN.lat]).setPopup(new maplibregl.Popup().setHTML(`<b>${esc(ORIGIN.name)}</b><br>${esc(ORIGIN.address)}<br>Origin — all routes start &amp; end here`)).addTo(map));
+  const allpts=[[ORIGIN.lng,ORIGIN.lat]];
+  for(const d of [1,2,3]){
+    if(!DRVON[d])continue;
+    const r=driverRoute(d);if(!r)continue;
+    const dc=DRIVERS[d].color;
+    r.order.forEach((s,idx)=>{
+      const e=document.createElement("div");e.className="pin";e.style.background=dc;e.textContent=(idx+1)+' '+s.name.replace(/ Elementary| School/,'').slice(0,10);
+      allpts.push([s.lng,s.lat]);
+      markers.push(new maplibregl.Marker({element:e}).setLngLat([s.lng,s.lat]).setPopup(new maplibregl.Popup().setHTML(`<b>${esc(s.name)}</b><br>${esc(s.address)}<br>${DRIVERS[d].name} · ${esc(s.wStart)}–${esc(s.wEnd)} · ${DAYS.filter(x=>s.days[x]).join(' ')}`)).addTo(map));
+    });
+    const geo=await osrmGeom([ORIGIN,...r.order,ORIGIN]);
+    const id='r'+d;
+    if(map.getSource(id)){map.removeLayer(id);map.removeSource(id);}
+    map.addSource(id,{type:"geojson",data:{type:"Feature",geometry:{type:"LineString",coordinates:geo}}});
+    map.addLayer({id,type:"line",source:id,paint:{"line-color":dc,"line-width":3,"line-opacity":.65}});
+  }
+  if(allpts.length>1){const b=allpts.reduce((bb,c)=>bb.extend(c),new maplibregl.LngLatBounds(allpts[0],allpts[0]));map.fitBounds(b,{padding:55,maxZoom:11,duration:400});}
+}
+async function refreshOSRM(){ // build a live drive matrix for all origin+school pairs used in loops
+  try{
+    const pts=[ORIGIN,...SEED];
+    const coords=pts.map(s=>`${s.lng},${s.lat}`).join(';');
+    const r=await fetch(`https://router.project-osrm.org/table/v1/driving/${coords}?annotations=duration,distance`);
+    const j=await r.json();
+    if(j.durations&&j.distances){
+      for(let a=0;a<pts.length;a++)for(let b=0;b<pts.length;b++){
+        OSRM[key2(pts[a],pts[b])]={min:j.durations[a][b]/60,mi:j.distances[a][b]/1609.34};
+      }
+      OSRM_LIVE=true;renderStats();renderDays();
+    }
+  }catch(e){}
+}
+
+/* ================= EXPORT ================= */
+function exportCSV(){
+  const rows=[];const cols=SCHOOLS;
+  rows.push(['Field',...cols.map(s=>s.name)]);
+  const line=(lb,fn)=>rows.push([lb,...cols.map(fn)]);
+  line('Driver',s=>DRIVERS[s.driver].name); line('Included',s=>inc(s)?'YES':'no');
+  line('Address',s=>s.address); line('Delivery days',s=>DAYS.filter(d=>s.days[d]).join(' '));
+  line('Window start',s=>s.wStart); line('Window end',s=>s.wEnd);
+  line('Delivery notes',s=>s.notes); line('Holiday schedule',s=>s.holiday);
+  const t=totals();
+  rows.push([]);rows.push(['— Route summary (no pricing) —']);
+  rows.push(['Schools on',t.schools]);rows.push(['Stops/wk',t.stops]);
+  rows.push(['Drive min/wk',Math.round(t.drive)]);rows.push(['Stop min/wk',Math.round(t.stopMin)]);
+  rows.push(['Total route min/wk',Math.round(t.total)]);rows.push(['Weekly miles',Math.round(t.dist)]);
+  const csv=rows.map(r=>r.map(c=>`"${String(c==null?'':c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  dl('cfh-fall-2026-discovery.csv','data:text/csv;charset=utf-8,'+encodeURIComponent(csv));logNow('export_csv',t);
+}
+function exportJSON(){dl('cfh-fall-2026-discovery.json','data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify({user:GUSER,assumptions:A,totals:totals(),schools:SCHOOLS},null,2)));logNow('export_json',{});}
+function dl(name,uri){const a=document.createElement("a");a.href=uri;a.download=name;document.body.appendChild(a);a.click();a.remove();}
+
+/* ================= BOOT ================= */
+async function startApp(){
+  document.getElementById("who").innerHTML=GUSER.name?`<b>${esc(GUSER.name)}</b>${esc(GUSER.company||'')}`:'';
+  logNow('session_start',{ua:navigator.userAgent.slice(0,120),tz:Intl.DateTimeFormat().resolvedOptions().timeZone});
+  await hydrate();
+  initMap();renderAll();
+}
+(function initGate(){
+  const gate=document.getElementById('gate');
+  function gmsg(t,ok){const m=document.getElementById('gMsg');m.style.color=ok?'#7ddba0':'#f0a58f';m.textContent=t||'';}
+  function unlock(){gate.style.display='none';startApp();setTimeout(()=>map&&map.resize&&map.resize(),250);}
+  if(DEV){GUSER={email:'dev@local',name:'Preview',company:'',phone:''};unlock();return;}
+  let tok=null;try{tok=JSON.parse(localStorage.getItem('cfhdisco_token')||'null');}catch(e){}
+  if(tok&&tok.email&&(Date.now()-tok.ts)<30*864e5){GUSER=tok;unlock();return;}
+  document.getElementById('gSend').onclick=async()=>{
+    const email=document.getElementById('gEmail').value.trim();
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){gmsg('Enter a valid email');return;}
+    GUSER={email,name:document.getElementById('gName').value.trim(),company:document.getElementById('gCo').value.trim(),phone:document.getElementById('gPhone').value.trim()};
+    gmsg('Sending…',true);
+    const r=await jsonp({mode:'code',site:SITE,email,name:GUSER.name,company:GUSER.company,phone:GUSER.phone});
+    jsonp({mode:'log',site:SITE,email,type:SITE+':contact',data:JSON.stringify(GUSER)});
+    if(r.ok){document.getElementById('gEmailShow').textContent=email;document.getElementById('gstep1').style.display='none';document.getElementById('gstep2').style.display='';gmsg('Code sent — check your email.',true);}
+    else gmsg(r.error||'Could not send code');
+  };
+  document.getElementById('gVerify').onclick=async()=>{
+    const c=document.getElementById('gCode').value.trim();if(c.length<6){gmsg('Enter the 6-digit code');return;}
+    gmsg('Verifying…',true);
+    const r=await jsonp({mode:'verify',site:SITE,email:GUSER.email,code:c});
+    if(r.ok){try{localStorage.setItem('cfhdisco_token',JSON.stringify(Object.assign({ts:Date.now()},GUSER)));}catch(e){}logNow('login',GUSER);unlock();}
+    else gmsg(r.error||'Wrong code');
+  };
+  document.getElementById('gBack').onclick=()=>{document.getElementById('gstep2').style.display='none';document.getElementById('gstep1').style.display='';gmsg('');};
+})();
+</script>
+</body>
+</html>
