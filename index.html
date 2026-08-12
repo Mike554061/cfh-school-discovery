@@ -10,12 +10,13 @@
 <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
 <style>
   :root{
-    --ink:#241f19; --ink2:#332c23; --ink3:#181410;
-    --amber:#e0872b; --amber-d:#b96c1c; --amber-soft:#f4c98a; --tint:#fbf1e2;
-    --d1:#e0872b; --d2:#2f8f83; --d3:#8258b0;
-    --paper:#ffffff; --paper2:#faf5ec; --paper3:#f0e8db;
-    --line:#e7ddce; --txt:#241f19; --mut:#6d6255; --mut2:#9a8e7e;
-    --shadow:0 1px 2px rgba(40,32,20,.06),0 6px 20px rgba(40,32,20,.07);
+    /* SupplyNow / CFH company palette (cognac + cream) */
+    --ink:#1B1B1B; --ink2:#262626; --ink3:#141414;
+    --amber:#8A6D3B; --amber-d:#6E5528; --amber-soft:#E6C68E; --tint:#F6F1E9;
+    --d1:#8A6D3B; --d2:#4A5568; --d3:#B79A6A;
+    --paper:#FFFFFF; --paper2:#FCFBFA; --paper3:#F6F1E9;
+    --line:#E1DFD9; --txt:#1B1B1B; --mut:#6B6B6B; --mut2:#9A9187;
+    --shadow:0 1px 2px rgba(27,27,27,.05),0 6px 20px rgba(27,27,27,.06);
     --radius:12px;
     --f:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   }
@@ -26,17 +27,17 @@
 
   /* ---------- GATE ---------- */
   #gate{position:fixed;inset:0;z-index:3000;background:var(--ink3);display:flex;align-items:center;justify-content:center;padding:20px;
-    background-image:radial-gradient(circle at 50% -10%,rgba(224,135,43,.20),transparent 60%)}
-  #gate .box{width:100%;max-width:400px;background:var(--ink);border:1px solid #4a4034;border-radius:16px;padding:30px 26px;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.55)}
+    background-image:radial-gradient(circle at 50% -10%,rgba(138,109,59,.20),transparent 60%)}
+  #gate .box{width:100%;max-width:400px;background:var(--ink);border:1px solid #3a3a3a;border-radius:16px;padding:30px 26px;text-align:center;box-shadow:0 24px 70px rgba(0,0,0,.55)}
   .wm{display:inline-flex;align-items:center;gap:9px;margin-bottom:12px}
-  .wm .mk{background:var(--amber);color:#231a10;font-weight:900;font-size:15px;letter-spacing:.02em;padding:6px 11px;border-radius:9px}
+  .wm .mk{background:var(--amber);color:#FCFBFA;font-weight:900;font-size:15px;letter-spacing:.02em;padding:6px 11px;border-radius:9px}
   .wm .co{color:#fff;font-weight:700;font-size:15px;letter-spacing:.02em}
   #gate h1{font-size:19px;color:#fff;margin:6px 0 3px}
   #gate .sub{font-size:12.5px;color:#c3b6a4;margin-bottom:20px;line-height:1.55}
-  #gate input{width:100%;background:var(--ink3);border:1px solid #4a4034;color:#fff;border-radius:9px;padding:12px 13px;font-size:15px;font-family:var(--f);margin:6px 0}
+  #gate input{width:100%;background:var(--ink3);border:1px solid #3a3a3a;color:#fff;border-radius:9px;padding:12px 13px;font-size:15px;font-family:var(--f);margin:6px 0}
   #gate input:focus{outline:none;border-color:var(--amber)}
-  #gate button{width:100%;background:var(--amber);color:#231a10;border:none;border-radius:9px;padding:12px;font-size:14.5px;font-weight:700;font-family:var(--f);cursor:pointer;margin-top:10px}
-  #gate button:hover{background:var(--amber-soft)}
+  #gate button{width:100%;background:var(--amber);color:#FCFBFA;border:none;border-radius:9px;padding:12px;font-size:14.5px;font-weight:700;font-family:var(--f);cursor:pointer;margin-top:10px}
+  #gate button:hover{background:var(--amber-d)}
   #gate .row2{display:flex;gap:8px}#gate .row2 input{width:50%}
   #gMsg{font-size:12.5px;margin-top:12px;min-height:16px}
   #gBack{color:#c3b6a4;font-size:12px;display:inline-block;margin-top:12px;cursor:pointer;text-decoration:underline}
@@ -44,7 +45,7 @@
 
   /* ---------- HEADER ---------- */
   header{background:var(--ink);color:#fff;padding:13px 22px;display:flex;align-items:center;gap:14px;border-bottom:3px solid var(--amber)}
-  header .mk{background:var(--amber);color:#231a10;font-weight:900;font-size:15px;padding:6px 11px;border-radius:9px;letter-spacing:.02em}
+  header .mk{background:var(--amber);color:#FCFBFA;font-weight:900;font-size:15px;padding:6px 11px;border-radius:9px;letter-spacing:.02em}
   header .htxt .t{font-size:17px;color:#fff;font-weight:800;letter-spacing:-.01em}
   header .htxt .s{font-size:12px;color:var(--amber-soft);margin-top:2px}
   header .who{margin-left:auto;text-align:right;font-size:11.5px;color:#c3b6a4}
@@ -262,7 +263,7 @@ async function hydrate(){ if(!SERVER)return; try{const r=await jsonp({mode:'disc
 const DAYS=["Mon","Tue","Wed","Thu","Fri"];
 let A={svc:15,mph:30};
 const ORIGIN={id:'CFHPROD',name:'CFH Production',address:'11022 Webster Rd, Strongsville, OH 44136',lat:41.331417,lng:-81.801018};
-const DRIVERS={1:{name:'Driver 1',color:'#e0872b'},2:{name:'Driver 2',color:'#2f8f83'}};
+const DRIVERS={1:{name:'Driver 1',color:'#8A6D3B'},2:{name:'Driver 2',color:'#4A5568'}};
 const DLIST=[1,2];
 function daysFrom(s){const o={Mon:true,Tue:true,Wed:true,Thu:true,Fri:true};if(/thurs/i.test(s))o.Fri=false;return o;}
 
@@ -335,7 +336,7 @@ function renderStats(){
     {n:mn(t.stopMin),l:"Stop time / wk",sub:`${A.svc} min × ${t.stops}`},
     {n:t.holidaySet+"/"+t.holidayTot,l:"Holiday plans set"},
   ].map(s=>`<div class="stat ${s.hero?'hero':''}"><div class="n">${s.n}</div><div class="l">${s.l}</div>${s.sub?`<div class="sub">${s.sub}</div>`:''}</div>`).join("");
-  document.getElementById("milesnote").innerHTML=`Across 3 driver loops from CFH Production: ~<b>${num(t.dist)} mi</b> and ~<b>${mn(t.drive)}</b> driving per week, plus <b>${mn(t.stopMin)}</b> stop time (${A.svc} min × ${t.stops} stops) = <b>${mn(t.total)}</b> total route time. ${OSRM_LIVE?'<span style="color:var(--amber-d)">Live road-network drive times.</span>':'<span style="color:#b96c1c">Straight-line estimates (live routing loading…).</span>'}`;
+  document.getElementById("milesnote").innerHTML=`Across 3 driver loops from CFH Production: ~<b>${num(t.dist)} mi</b> and ~<b>${mn(t.drive)}</b> driving per week, plus <b>${mn(t.stopMin)}</b> stop time (${A.svc} min × ${t.stops} stops) = <b>${mn(t.total)}</b> total route time. ${OSRM_LIVE?'<span style="color:var(--amber-d)">Live road-network drive times.</span>':'<span style="color:#6E5528">Straight-line estimates (live routing loading…).</span>'}`;
 }
 
 const FIELDS=[
@@ -440,7 +441,7 @@ async function drawMap(){
   if(!map||!map.isStyleLoaded()){setTimeout(drawMap,150);return;}
   markers.forEach(m=>m.remove());markers=[];
   ['r1','r2'].forEach(id=>{if(map.getLayer(id))map.removeLayer(id);if(map.getSource(id))map.removeSource(id);});
-  const de=document.createElement("div");de.className="pin";de.style.background="#241f19";de.textContent="◆ CFH PRODUCTION";de.style.fontSize="9px";
+  const de=document.createElement("div");de.className="pin";de.style.background="#1B1B1B";de.textContent="◆ CFH PRODUCTION";de.style.fontSize="9px";
   markers.push(new maplibregl.Marker({element:de}).setLngLat([ORIGIN.lng,ORIGIN.lat]).setPopup(new maplibregl.Popup().setHTML(`<b>${esc(ORIGIN.name)}</b><br>${esc(ORIGIN.address)}<br>Origin — all routes start &amp; end here`)).addTo(map));
   const allpts=[[ORIGIN.lng,ORIGIN.lat]];
   for(const d of DLIST){
