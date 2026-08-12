@@ -171,7 +171,7 @@
       <span id="gBack">← use different details</span>
     </div>
     <div id="gMsg"></div>
-    <div class="gfine">Ice cream sundaes &amp; root beer floats 🍦 · Property of SupplyNow / Chefs For Hire</div>
+    <div class="gfine">Property of SupplyNow</div>
   </div>
 </div>
 
@@ -179,7 +179,7 @@
   <span class="mk">CFH</span>
   <div class="htxt">
     <div class="t">School Schedule — Fall 2026 Discovery</div>
-    <div class="s">Chefs For Hire · 3 driver routes · Akron / Cleveland / Canton, OH</div>
+    <div class="s">Chefs For Hire · 2 driver routes · Akron &amp; Cleveland, OH</div>
   </div>
   <div class="who" id="who"></div>
 </header>
@@ -194,7 +194,7 @@
       <div class="body">
         <div><label>Stop service time</label><div class="fld"><input id="a_svc" type="number" step="5" value="15"><span class="u">min / stop</span></div></div>
         <div><label>Fallback speed</label><div class="fld"><input id="a_mph" type="number" step="1" value="30"><span class="u">mph (if drive API down)</span></div></div>
-        <div class="note">Each route starts &amp; ends at <b>CFH Production, 3619 Walton Ave, Cleveland</b>. Drive times come from live road-network routing (OSRM); stop time is a flat allowance per school. Weekly totals roll up each school's captured delivery days. <b>No pricing shown.</b></div>
+        <div class="note">Each route starts &amp; ends at <b>CFH Production, 11022 Webster Rd, Strongsville</b>. Drive times come from live road-network routing (OSRM); stop time is a flat allowance per school. Weekly totals roll up each school's captured delivery days. <b>No pricing shown.</b></div>
       </div>
     </details>
   </div>
@@ -261,32 +261,30 @@ async function hydrate(){ if(!SERVER)return; try{const r=await jsonp({mode:'disc
 /* ================= CONFIG ================= */
 const DAYS=["Mon","Tue","Wed","Thu","Fri"];
 let A={svc:15,mph:30};
-const ORIGIN={id:'CFHPROD',name:'CFH Production',address:'3619 Walton Ave, Cleveland, OH 44113',lat:41.470927,lng:-81.70882};
-const DRIVERS={1:{name:'Driver 1',color:'#e0872b'},2:{name:'Driver 2',color:'#2f8f83'},3:{name:'Driver 3',color:'#8258b0'}};
+const ORIGIN={id:'CFHPROD',name:'CFH Production',address:'11022 Webster Rd, Strongsville, OH 44136',lat:41.331417,lng:-81.801018};
+const DRIVERS={1:{name:'Driver 1',color:'#e0872b'},2:{name:'Driver 2',color:'#2f8f83'}};
+const DLIST=[1,2];
 function daysFrom(s){const o={Mon:true,Tue:true,Wed:true,Thu:true,Fri:true};if(/thurs/i.test(s))o.Fri=false;return o;}
 
 const SEED=[
- {short:'MIDDLE',driver:1,name:'Middlebury Elementary',address:'88 Kent St, Akron, OH 44305',lat:41.072733,lng:-81.487878,wStart:'10:00',wEnd:'10:45',days:daysFrom('Mon-Thurs'),notes:'Drop off 11AM · Eat 11:15–1:10. Biggest stop — drop at back door, ring bell on left.',holiday:'(Update)'},
- {short:'STEEL',driver:1,name:'Steel Elementary',address:'1570 Creighton Ave, Akron, OH 44310',lat:41.106636,lng:-81.476795,wStart:'10:05',wEnd:'11:45',days:daysFrom('Mon-Thurs'),notes:'Drop off 10:45 · Eat 11–11:45',holiday:'(Update)'},
- {short:'ACT',driver:1,name:'ACT Elementary',address:'1115 S Main St, Akron, OH 44301',lat:41.056402,lng:-81.528807,wStart:'10:30',wEnd:'11:45',days:daysFrom('Mon-Thurs'),notes:'Drop off 11:45 · Eat 12–1pm · 2 drops, one stop',holiday:'(Update)'},
+ {short:'MIDDLE',driver:1,name:'Middlebury Elementary',address:'88 Kent St, Akron, OH 44305',lat:41.072733,lng:-81.487878,wStart:'10:00',wEnd:'10:45',days:daysFrom('Mon-Fri'),notes:'Drop off 11AM · Eat 11:15–1:10. Biggest stop — drop at back door, ring bell on left.',holiday:'(Update)'},
+ {short:'STEEL',driver:1,name:'Steel Elementary',address:'1570 Creighton Ave, Akron, OH 44310',lat:41.106636,lng:-81.476795,wStart:'10:05',wEnd:'11:45',days:daysFrom('Mon-Fri'),notes:'Drop off 10:45 · Eat 11–11:45',holiday:'(Update)'},
+ {short:'ACT',driver:1,name:'ACT Elementary',address:'1115 S Main St, Akron, OH 44301',lat:41.056402,lng:-81.528807,wStart:'10:30',wEnd:'11:45',days:daysFrom('Mon-Fri'),notes:'Drop off 11:45 · Eat 12–1pm · 2 drops, one stop',holiday:'(Update)'},
  {short:'EELAAK',driver:1,name:'EELA Akron',address:'1115 S Main St, Akron, OH 44301',lat:41.056402,lng:-81.528807,wStart:'10:30',wEnd:'11:30',days:daysFrom('Mon-Fri'),notes:'Drop off 11:45 · Eat 12–1pm · 2 drops at 1 stop (shares building with ACT)',holiday:'(Update)'},
  {short:'MAINPREP',driver:1,name:'Main Prep',address:'1035 Clay St, Akron, OH 44301',lat:41.053274,lng:-81.510948,wStart:'10:00',wEnd:'10:45',days:daysFrom('Mon-Fri'),notes:'Front door — call Mary +1 330-592-2526, they bring out a cart. Drop off 11:30 · Eat 12:05',holiday:'(Update)'},
- {short:'LAKEERIE',driver:2,name:'Lake Erie Elementary',address:'11724 Detroit Ave, Lakewood, OH 44107',lat:41.483713,lng:-81.76914,wStart:'10:25',wEnd:'10:40',days:daysFrom('Mon-Thurs'),notes:'(1) Drop off 10:30 · Eat 11AM · park in back lot, use that entrance',holiday:'(Update)'},
+ {short:'LAKEERIE',driver:2,name:'Lake Erie Elementary',address:'11724 Detroit Ave, Lakewood, OH 44107',lat:41.483713,lng:-81.76914,wStart:'10:25',wEnd:'10:40',days:daysFrom('Mon-Fri'),notes:'(1) Drop off 10:30 · Eat 11AM · park in back lot, use that entrance',holiday:'(Update)'},
  {short:'CASTMAIN',driver:2,name:'Castle Main Elementary',address:'3950 Prospect Ave, Cleveland, OH 44115',lat:41.502098,lng:-81.658301,wStart:'10:30',wEnd:'10:45',days:daysFrom('Mon-Fri'),notes:'(2) Drop off 10:45 · Eat 11–11:30 · bring to front door',holiday:'(Update)'},
  {short:'IAW',driver:2,name:'IAW Elementary',address:'13111 Crossburn Ave, Cleveland, OH 44135',lat:41.424966,lng:-81.781316,wStart:'11:10',wEnd:'11:30',days:daysFrom('Mon-Fri'),notes:'Drop off 11:30 · Eat 12–1:20pm',holiday:'(Update)'},
- {short:'CASTPARMA',driver:2,name:'Castle Parma Elementary',address:'12000 Snow Rd, Parma, OH 44130',lat:41.405094,lng:-81.77026,wStart:'11:30',wEnd:'11:45',days:daysFrom('Mon-Thurs'),notes:'Suite 4 & 5 · (3) Drop off 11:40 · Eat 11:50–12:10 · bring to front door',holiday:'(Update)'},
- {short:'CASTEAST',driver:2,name:'Castle East Elementary',address:'5130 Warrensville Center Rd, Maple Heights, OH 44137',lat:41.420923,lng:-81.537431,wStart:'12:20',wEnd:'12:35',days:daysFrom('Mon-Thurs'),notes:'Driver re-stages at CFH Production before this stop. Drop off 12:35pm · Eat 12:50–1:50 · bring to front door',holiday:'(Update)'},
- {short:'EELACAN',driver:3,name:'EELA Canton',address:'3500 Cleveland Ave NW, North Canton, OH 44720',lat:40.837255,lng:-81.389663,wStart:'10:20',wEnd:'11:00',days:daysFrom('Mon-Thurs'),notes:'Arrive by 10:20, leave by 10:30',holiday:'(Update)'},
- {short:'BEACON',driver:3,name:'Beacon',address:'243 N Milton St, Smithville, OH 44677',lat:40.864777,lng:-81.861082,wStart:'10:40',wEnd:'11:15',days:daysFrom('Mon-Fri'),notes:'Two locations in one',holiday:'(Update)'},
- {short:'STARK',driver:3,name:'Stark Elementary',address:'1379 Garfield Ave SW, Canton, OH 44706',lat:40.78558,lng:-81.393308,wStart:'10:40',wEnd:'11:00',days:daysFrom('Mon-Fri'),notes:'Two locations in one',holiday:'(Update)'},
+ {short:'CASTPARMA',driver:2,name:'Castle Parma Elementary',address:'12000 Snow Rd, Parma, OH 44130',lat:41.405094,lng:-81.77026,wStart:'11:30',wEnd:'11:45',days:daysFrom('Mon-Fri'),notes:'Suite 4 & 5 · (3) Drop off 11:40 · Eat 11:50–12:10 · bring to front door',holiday:'(Update)'},
+ {short:'CASTEAST',driver:2,name:'Castle East Elementary',address:'5130 Warrensville Center Rd, Maple Heights, OH 44137',lat:41.420923,lng:-81.537431,wStart:'12:20',wEnd:'12:35',days:daysFrom('Mon-Fri'),notes:'Driver re-stages at CFH Production before this stop. Drop off 12:35pm · Eat 12:50–1:50 · bring to front door',holiday:'(Update)'},
 ];
 
 /* ================= STATE ================= */
-let SCHOOLS=load()||SEED.map(s=>Object.assign({_inc:true},JSON.parse(JSON.stringify(s))));
-let DRVON={1:true,2:true,3:true};
+let SCHOOLS=(load()||SEED.map(s=>Object.assign({_inc:true},JSON.parse(JSON.stringify(s))))).filter(s=>DRIVERS[s.driver]);
+let DRVON={1:true,2:true};
 let map,markers=[],routeCache={};
-function save(){localStorage.setItem("cfhdisco_v1",JSON.stringify(SCHOOLS));}
-function load(){try{const d=localStorage.getItem("cfhdisco_v1");return d?JSON.parse(d):null}catch(e){return null}}
+function save(){localStorage.setItem("cfhdisco_v2",JSON.stringify(SCHOOLS));}
+function load(){try{const d=localStorage.getItem("cfhdisco_v2");return d?JSON.parse(d):null}catch(e){return null}}
 function inc(s){return s._inc!==false;}
 function idxOf(s){return SCHOOLS.indexOf(s);}
 
@@ -312,7 +310,7 @@ function dayDriverDrive(d,day){ // route for driver d on a given weekday (only s
 }
 function totals(){
   let stops=0,drive=0,dist=0;
-  [1,2,3].forEach(d=>DAYS.forEach(day=>{const r=dayDriverDrive(d,day);stops+=r.stops;drive+=r.drive;dist+=r.dist;}));
+  DLIST.forEach(d=>DAYS.forEach(day=>{const r=dayDriverDrive(d,day);stops+=r.stops;drive+=r.drive;dist+=r.dist;}));
   const stopMin=stops*A.svc;
   const included=SCHOOLS.filter(inc);
   const drivers=new Set(included.map(s=>s.driver)).size;
@@ -378,12 +376,12 @@ function renderMatrix(){
 }
 function renderChips(){
   const el=document.getElementById("drvChips");
-  el.innerHTML='<span class="lbl">Routes:</span>'+[1,2,3].map(d=>`<span class="chip ${DRVON[d]?'on':''}" onclick="togDrv(${d})"><span class="dot" style="background:${DRIVERS[d].color}"></span>${DRIVERS[d].name}</span>`).join('');
+  el.innerHTML='<span class="lbl">Routes:</span>'+DLIST.map(d=>`<span class="chip ${DRVON[d]?'on':''}" onclick="togDrv(${d})"><span class="dot" style="background:${DRIVERS[d].color}"></span>${DRIVERS[d].name}</span>`).join('');
 }
 function renderDays(){
   const el=document.getElementById("days");el.innerHTML="";
   let any=false;
-  [1,2,3].forEach(d=>{
+  DLIST.forEach(d=>{
     if(!DRVON[d])return;
     const r=driverRoute(d);
     const c=document.createElement("div");c.className="day";
@@ -419,7 +417,7 @@ function applyState(state){
     const dv=g('days');if(dv!==undefined){const on=String(dv).split(',').map(x=>x.trim());DAYS.forEach(d=>s.days[d]=on.indexOf(d)>=0);}
     const iv=g('inc');if(iv!==undefined)s._inc=(iv!=='off');
   });
-  localStorage.setItem("cfhdisco_v1",JSON.stringify(SCHOOLS));
+  localStorage.setItem("cfhdisco_v2",JSON.stringify(SCHOOLS));
 }
 function resetAll(){if(confirm("Clear local changes and reload the original schedule?")){SCHOOLS=SEED.map(s=>Object.assign({_inc:true},JSON.parse(JSON.stringify(s))));save();renderAll();logNow('reset',{});}}
 ['svc','mph'].forEach(k=>{const m={svc:'a_svc',mph:'a_mph'};document.getElementById(m[k]).addEventListener('input',e=>{A[k]=+e.target.value||A[k];renderStats();renderDays();drawMap();});});
@@ -441,11 +439,11 @@ async function osrmGeom(list){
 async function drawMap(){
   if(!map||!map.isStyleLoaded()){setTimeout(drawMap,150);return;}
   markers.forEach(m=>m.remove());markers=[];
-  ['r1','r2','r3'].forEach(id=>{if(map.getLayer(id))map.removeLayer(id);if(map.getSource(id))map.removeSource(id);});
+  ['r1','r2'].forEach(id=>{if(map.getLayer(id))map.removeLayer(id);if(map.getSource(id))map.removeSource(id);});
   const de=document.createElement("div");de.className="pin";de.style.background="#241f19";de.textContent="◆ CFH PRODUCTION";de.style.fontSize="9px";
   markers.push(new maplibregl.Marker({element:de}).setLngLat([ORIGIN.lng,ORIGIN.lat]).setPopup(new maplibregl.Popup().setHTML(`<b>${esc(ORIGIN.name)}</b><br>${esc(ORIGIN.address)}<br>Origin — all routes start &amp; end here`)).addTo(map));
   const allpts=[[ORIGIN.lng,ORIGIN.lat]];
-  for(const d of [1,2,3]){
+  for(const d of DLIST){
     if(!DRVON[d])continue;
     const r=driverRoute(d);if(!r)continue;
     const dc=DRIVERS[d].color;
